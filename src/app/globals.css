@@ -118,3 +118,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+html, body {
+  background-color: #111827; /* This is the gray-900 color */
+  min-height: 100%;
+  height: 100%;
+  overscroll-behavior: none; /* This prevents the overscroll effect */
+}
+
+html {
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Smooth scrolling for a better experience */
+html {
+  scroll-behavior: smooth;
+}

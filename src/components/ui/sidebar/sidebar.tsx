@@ -3,7 +3,7 @@ import SidebarButton from "./SidebarButton";
 
 const Sidebar = (): ReactNode => {
   return (
-    <div className="p-6 border-r-solid border-r-2 border-r-green-500/50 min-w-60 bg-gray-900 [&>*]:text-white backdrop-blur-sm relative overflow-hidden">
+    <aside className="fixed top-0 left-0 h-screen p-6 border-r-solid border-r-2 border-r-green-500/50 min-w-60 bg-gray-900 [&>*]:text-white backdrop-blur-sm overflow-y-auto z-20">
       {/* Decorative elements for tech feel */}
       <div className="absolute -left-10 top-1/4 w-40 h-40 bg-green-500/10 rounded-full blur-2xl z-0"></div>
       <div className="absolute -right-20 top-3/4 w-40 h-40 bg-cyan-500/10 rounded-full blur-2xl z-0"></div>
@@ -21,7 +21,7 @@ const Sidebar = (): ReactNode => {
           <SidebarButton title="Tasks" link="/dashboard/tasks" />
         </div>
       </div>
-    </div>
+    </aside>
   );
 };
 
