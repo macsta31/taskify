@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(uuid())
+  firstName      String
+  lastName       String
+  hashedPassword String
+  email          String    @unique
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now())
+  tasks          Task[]    @relation("UserToTask")
+  projects       Project[] @relation("UserToProject")
+}
+
+model Project {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  deadline    DateTime?
+  created_at  DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  task        Task[]    @relation("TaskToProject")
+  user        User      @relation("UserToProject", fields: [user_id], references: [id])
+  user_id     String
+}
+
+model Task {
+  id                       String       @id @default(uuid())
+  title                    String
+  parent_task              Task?        @relation("TaskToTask", fields: [parent_task_id], references: [id])
+  parent_task_id           String?
+  child_tasks              Task[]       @relation("TaskToTask")
+  project                  Project?     @relation("TaskToProject", fields: [project_id], references: [id])
+  project_id               String?
+  priority                 Int          @default(0) @db.SmallInt
+  description              String?
+  status                   String       @default("pending")
+  start_date               DateTime?
+  end_date                 DateTime?
+  estimated_duration_hours Int          @default(3)
+  actual_duration_hours    Int?
+  created_at               DateTime     @default(now())
+  update_at                DateTime     @updatedAt
+  labels                   Task_Label[]
+  user                     User         @relation("UserToTask", fields: [user_id], references: [id])
+  user_id                  String
+  userId                   String?
+}
+
+model Label {
+  id         String       @id @default(uuid())
+  name       String
+  color      String
+  created_at DateTime     @default(now())
+  tasks      Task_Label[]
+}
+
+model Task_Label {
+  task     Task   @relation(fields: [task_id], references: [id])
+  task_id  String
+  label    Label  @relation(fields: [label_id], references: [id])
+  label_id String
+
+  @@id([task_id, label_id])
+}
