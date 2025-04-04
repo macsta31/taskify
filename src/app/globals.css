@@ -134,3 +134,22 @@ html {
 html {
   scroll-behavior: smooth;
 }
+
+/* Add these animations for the modal at the bottom of the file */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.animate-scaleUp {
+  animation: scaleUp 0.2s ease-out forwards;
+}

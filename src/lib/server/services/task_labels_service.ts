@@ -22,4 +22,21 @@ export const taskLabelServices = {
             error: null
         }
     },
+    findAllByTask: async (task_id: string): Promise<Response<Task_Label[]|null, Error|null>> => {
+        const callback = async (task_id: string) => {
+            return await taskLabelRepository.findByTaskId(task_id)
+        }
+
+        const [response, error] = await utils.tryCatch(callback, task_id)
+        if(error) {
+            return {
+                data: null,
+                error
+            }
+        }
+        return {
+            data: response,
+            error: null
+        }
+    }
 } 

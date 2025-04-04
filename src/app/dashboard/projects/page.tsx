@@ -1,6 +1,7 @@
 import { formatDate, getDeadlineStatusClass } from "@/lib/client/date-utils";
 import { projectServices } from "@/lib/server/services/projects_service";
 import { taskServices } from "@/lib/server/services/tasks_service";
+import Link from "next/link";
 
 // const projects = [
 //   {
@@ -61,9 +62,9 @@ export default async function Projects() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-cyan-400 inline-block pb-1">Projects</h1>
-        <button className="bg-gradient-to-r from-green-500 to-cyan-500 px-4 py-2 rounded-md text-white hover:from-green-600 hover:to-cyan-600 shadow-lg hover:shadow-green-500/25 transition-all">
+        <Link className="bg-gradient-to-r from-green-500 to-cyan-500 px-4 py-2 rounded-md text-white hover:from-green-600 hover:to-cyan-600 shadow-lg hover:shadow-green-500/25 transition-all" href={'/dashboard/projects/new'}>
           Create Project
-        </button>
+        </Link>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
