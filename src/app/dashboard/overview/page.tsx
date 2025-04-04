@@ -1,116 +1,140 @@
 import { formatDate, formatRelativeDate, getDeadlineStatusClass, formatDateRange } from "@/lib/client/date-utils";
 
-const mockRecentProjects = [
-  {
-    id: "550e8400-e29b-41d4-a716-446655440000",
-    title: "Project Alpha",
-    description: "Building the next-gen platform",
-    deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-    created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
-    updatedAt: new Date(),
-    user_id: "a385a213-c9c0-4679-a28b-d9fb6fe1f353",
-    _count: {
-      task: 3
-    }
-  },
-  {
-    id: "550e8400-e29b-41d4-a716-446655440001",
-    title: "Project Beta",
-    description: "Internal tools development",
-    deadline: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60 days from now
-    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
-    updatedAt: new Date(),
-    user_id: "a385a213-c9c0-4679-a28b-d9fb6fe1f353",
-    _count: {
-      task: 1
-    }
-  }
-];
+import { projectServices } from "@/lib/server/services/projects_service";
+import { taskServices } from "@/lib/server/services/tasks_service";
 
-const mockRecentTasks = [
-  {
-    id: "991e8400-a29f-41c4-b712-446612340000",
-    title: "Design mockup",
-    description: "Create initial mockups for landing page",
-    status: "pending",
-    priority: 2,
-    start_date: new Date(),
-    end_date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // tomorrow
-    estimated_duration_hours: 4,
-    actual_duration_hours: null,
-    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-    update_at: new Date(),
-    project_id: "550e8400-e29b-41d4-a716-446655440000",
-    user_id: "a385a213-c9c0-4679-a28b-d9fb6fe1f353",
-    parent_task_id: null,
-    project: {
-      title: "Project Alpha"
-    },
-    labels: [
-      {
-        label: { name: "Design", color: "#38bdf8" }
-      }
-    ]
-  },
-  {
-    id: "991e8400-a29f-41c4-b712-446612340001",
-    title: "API implementation",
-    description: "Implement the REST API endpoints",
-    status: "pending",
-    priority: 1,
-    start_date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // tomorrow
-    end_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // in 3 days
-    estimated_duration_hours: 8,
-    actual_duration_hours: null,
-    created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-    update_at: new Date(),
-    project_id: "550e8400-e29b-41d4-a716-446655440000",
-    user_id: "a385a213-c9c0-4679-a28b-d9fb6fe1f353",
-    parent_task_id: null,
-    project: {
-      title: "Project Alpha"
-    },
-    labels: [
-      {
-        label: { name: "Backend", color: "#22c55e" }
-      }
-    ]
-  },
-  {
-    id: "991e8400-a29f-41c4-b712-446612340002",
-    title: "Documentation",
-    description: "Write technical documentation",
-    status: "pending",
-    priority: 0,
-    start_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // in 3 days
-    end_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // in 5 days
-    estimated_duration_hours: 6,
-    actual_duration_hours: null,
-    created_at: new Date(Date.now()),
-    update_at: new Date(),
-    project_id: "550e8400-e29b-41d4-a716-446655440001",
-    user_id: "a385a213-c9c0-4679-a28b-d9fb6fe1f353",
-    parent_task_id: null,
-    project: {
-      title: "Project Beta"
-    },
-    labels: [
-      {
-        label: { name: "Documentation", color: "#a855f7" }
-      }
-    ]
-  }
-];
+// const recentProjects = [
+//   {
+//     id: "550e8400-e29b-41d4-a716-446655440000",
+//     title: "Project Alpha",
+//     description: "Building the next-gen platform",
+//     deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+//     created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
+//     updatedAt: new Date(),
+//     user_id: "a385a213-c9c0-4679-a28b-d9fb6fe1f353",
+//     _count: {
+//       task: 3
+//     }
+//   },
+//   {
+//     id: "550e8400-e29b-41d4-a716-446655440001",
+//     title: "Project Beta",
+//     description: "Internal tools development",
+//     deadline: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60 days from now
+//     created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+//     updatedAt: new Date(),
+//     user_id: "a385a213-c9c0-4679-a28b-d9fb6fe1f353",
+//     _count: {
+//       task: 1
+//     }
+//   }
+// ];
 
-export default function Overview() {
+// const recentTasks = [
+//   {
+//     id: "991e8400-a29f-41c4-b712-446612340000",
+//     title: "Design mockup",
+//     description: "Create initial mockups for landing page",
+//     status: "pending",
+//     priority: 2,
+//     start_date: new Date(),
+//     end_date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // tomorrow
+//     estimated_duration_hours: 4,
+//     actual_duration_hours: null,
+//     created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+//     update_at: new Date(),
+//     project_id: "550e8400-e29b-41d4-a716-446655440000",
+//     user_id: "a385a213-c9c0-4679-a28b-d9fb6fe1f353",
+//     parent_task_id: null,
+//     project: {
+//       title: "Project Alpha"
+//     },
+//     labels: [
+//       {
+//         label: { name: "Design", color: "#38bdf8" }
+//       }
+//     ]
+//   },
+//   {
+//     id: "991e8400-a29f-41c4-b712-446612340001",
+//     title: "API implementation",
+//     description: "Implement the REST API endpoints",
+//     status: "pending",
+//     priority: 1,
+//     start_date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // tomorrow
+//     end_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // in 3 days
+//     estimated_duration_hours: 8,
+//     actual_duration_hours: null,
+//     created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+//     update_at: new Date(),
+//     project_id: "550e8400-e29b-41d4-a716-446655440000",
+//     user_id: "a385a213-c9c0-4679-a28b-d9fb6fe1f353",
+//     parent_task_id: null,
+//     project: {
+//       title: "Project Alpha"
+//     },
+//     labels: [
+//       {
+//         label: { name: "Backend", color: "#22c55e" }
+//       }
+//     ]
+//   },
+//   {
+//     id: "991e8400-a29f-41c4-b712-446612340002",
+//     title: "Documentation",
+//     description: "Write technical documentation",
+//     status: "pending",
+//     priority: 0,
+//     start_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // in 3 days
+//     end_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // in 5 days
+//     estimated_duration_hours: 6,
+//     actual_duration_hours: null,
+//     created_at: new Date(Date.now()),
+//     update_at: new Date(),
+//     project_id: "550e8400-e29b-41d4-a716-446655440001",
+//     user_id: "a385a213-c9c0-4679-a28b-d9fb6fe1f353",
+//     parent_task_id: null,
+//     project: {
+//       title: "Project Beta"
+//     },
+//     labels: [
+//       {
+//         label: { name: "Documentation", color: "#a855f7" }
+//       }
+//     ]
+//   }
+// ];
+
+export default async function Overview() {
+
+  const {data: recentProjects,} = await projectServices.findAll();
+  const {data: recentTasks,} = await taskServices.findAll();
+
+  if(!recentProjects || !recentTasks){
+    throw 'AAAA'
+  }
+
   // Sort tasks by due date (earliest first)
-  const sortedTasks = [...mockRecentTasks].sort(
-    (a, b) => a.end_date.getTime() - b.end_date.getTime()
+  const sortedTasks = [...recentTasks].sort(
+    (a, b) => {
+      // Handle null dates - null dates go last
+      if (!a.end_date) return 1;
+      if (!b.end_date) return -1;
+      return a.end_date.getTime() - b.end_date.getTime();
+    }
   );
+
+  // Get project title by project_id
+  const getProjectTitle = (projectId: string | null) => {
+    if (!projectId) return "No project";
+    const project = recentProjects.find(p => p.id === projectId);
+    return project?.title || "Unknown project";
+  };
 
   // Calculate projects timeline
   const now = new Date();
-  const calculateProgress = (startDate:Date, endDate:Date) => {
+  const calculateProgress = (startDate: Date | null, endDate: Date | null) => {
+    if (!startDate || !endDate) return 0;
     const total = endDate.getTime() - startDate.getTime();
     const elapsed = now.getTime() - startDate.getTime();
     return Math.max(0, Math.min(100, Math.round((elapsed / total) * 100)));
@@ -153,7 +177,7 @@ export default function Overview() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-white">{task.title}</h3>
-                      <p className="text-gray-400 text-sm">{task.project?.title}</p>
+                      <p className="text-gray-400 text-sm">{getProjectTitle(task.project_id)}</p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -190,7 +214,7 @@ export default function Overview() {
         
         <div className="bg-gray-800/70 p-6 rounded-lg backdrop-blur-sm border border-gray-700 shadow-lg">
           <div className="space-y-6">
-            {mockRecentProjects.map(project => {
+            {recentProjects.map(project => {
               const progress = calculateProgress(project.created_at, project.deadline);
               
               return (
@@ -230,7 +254,7 @@ export default function Overview() {
                   <div className="mt-3 flex">
                     <div className="text-gray-400 text-xs flex items-center mr-4">
                       <span className="w-2 h-2 bg-green-400 rounded-full inline-block mr-1"></span>
-                      {project._count.task} tasks
+                      {recentTasks.filter(t => t.project_id === project.id).length} tasks
                     </div>
                     <div className="text-gray-400 text-xs">
                       {progress}% complete
@@ -240,7 +264,7 @@ export default function Overview() {
               );
             })}
             
-            {mockRecentProjects.length === 0 && (
+            {recentProjects.length === 0 && (
               <div className="py-8 text-center text-gray-400">
                 <p>No active projects</p>
               </div>
@@ -273,20 +297,6 @@ export default function Overview() {
                     {formatRelativeDate(task.end_date)}
                   </span>
                 </div>
-                
-                {task.labels && task.labels.length > 0 && (
-                  <div className="mt-2 flex gap-1">
-                    {task.labels.map((taskLabel, idx) => (
-                      <span 
-                        key={idx} 
-                        className="text-xs px-2 py-0.5 rounded-full" 
-                        style={{ backgroundColor: `${taskLabel.label.color}20`, color: taskLabel.label.color }}
-                      >
-                        {taskLabel.label.name}
-                      </span>
-                    ))}
-                  </div>
-                )}
               </div>
             ))}
           </div>
@@ -296,7 +306,7 @@ export default function Overview() {
           <h2 className="text-lg font-semibold text-green-400 mb-5">Project Status</h2>
           
           <div className="space-y-4">
-            {mockRecentProjects.map(project => (
+            {recentProjects.map(project => (
               <div key={project.id} className="p-4 bg-gray-800/90 border border-gray-700 rounded-lg">
                 <h3 className="font-semibold text-white">{project.title}</h3>
                 <p className="text-gray-400 text-sm mt-1 line-clamp-1">{project.description}</p>

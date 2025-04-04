@@ -35,6 +35,7 @@ model Project {
   task        Task[]    @relation("TaskToProject")
   user        User      @relation("UserToProject", fields: [user_id], references: [id])
   user_id     String
+  status      String    @default("pending")
 }
 
 model Task {

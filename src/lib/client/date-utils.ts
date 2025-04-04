@@ -7,7 +7,8 @@
  * @param date The date to format
  * @returns Formatted date string (e.g., "May 10")
  */
-export const formatDate = (date: Date): string => {
+export const formatDate = (date: Date | null): string => {
+  if (!date) return "No date";
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
@@ -16,7 +17,9 @@ export const formatDate = (date: Date): string => {
  * @param date The date to format
  * @returns Relative time string (e.g., "today", "tomorrow", "in 3 days", "May 10")
  */
-export const formatRelativeDate = (date: Date): string => {
+export const formatRelativeDate = (date: Date | null): string => {
+  if (!date) return "No date";
+  
   const now = new Date();
   const tomorrow = new Date(now);
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -50,7 +53,9 @@ export const formatDateRange = (startDate: Date | null | undefined, endDate: Dat
  * @param date The deadline date
  * @returns CSS class string based on deadline proximity
  */
-export const getDeadlineStatusClass = (date: Date): string => {
+export const getDeadlineStatusClass = (date: Date | null): string => {
+  if (!date) return "text-gray-400";
+  
   const now = new Date();
   const diffTime = date.getTime() - now.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));

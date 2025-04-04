@@ -1,48 +1,62 @@
 import { formatDate, getDeadlineStatusClass } from "@/lib/client/date-utils";
+import { projectServices } from "@/lib/server/services/projects_service";
+import { taskServices } from "@/lib/server/services/tasks_service";
 
-const mockProjects = [
-  {
-    id: "550e8400-e29b-41d4-a716-446655440010",
-    title: "Website Redesign",
-    description: "Redesign the company website with modern UI/UX",
-    deadline: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000), // 45 days from now
-    created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 days ago
-    updatedAt: new Date(),
-    user_id: "a385a213-c9c0-4679-a28b-d9fb6fe1f353",
-    status: "In Progress",
-    _count: {
-      task: 5
-    }
-  },
-  {
-    id: "550e8400-e29b-41d4-a716-446655440011",
-    title: "Mobile App Development",
-    description: "Develop a new mobile app for iOS and Android",
-    deadline: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days from now
-    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
-    updatedAt: new Date(),
-    user_id: "a385a213-c9c0-4679-a28b-d9fb6fe1f353",
-    status: "Planning",
-    _count: {
-      task: 8
-    }
-  },
-  {
-    id: "550e8400-e29b-41d4-a716-446655440012",
-    title: "API Integration",
-    description: "Integrate third-party APIs into our platform",
-    deadline: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago (completed)
-    created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
-    updatedAt: new Date(),
-    user_id: "a385a213-c9c0-4679-a28b-d9fb6fe1f353",
-    status: "Completed",
-    _count: {
-      task: 3
-    }
+// const projects = [
+//   {
+//     id: "550e8400-e29b-41d4-a716-446655440010",
+//     title: "Website Redesign",
+//     description: "Redesign the company website with modern UI/UX",
+//     deadline: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000), // 45 days from now
+//     created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 days ago
+//     updatedAt: new Date(),
+//     user_id: "a385a213-c9c0-4679-a28b-d9fb6fe1f353",
+//     status: "In Progress",
+//     _count: {
+//       task: 5
+//     }
+//   },
+//   {
+//     id: "550e8400-e29b-41d4-a716-446655440011",
+//     title: "Mobile App Development",
+//     description: "Develop a new mobile app for iOS and Android",
+//     deadline: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days from now
+//     created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
+//     updatedAt: new Date(),
+//     user_id: "a385a213-c9c0-4679-a28b-d9fb6fe1f353",
+//     status: "Planning",
+//     _count: {
+//       task: 8
+//     }
+//   },
+//   {
+//     id: "550e8400-e29b-41d4-a716-446655440012",
+//     title: "API Integration",
+//     description: "Integrate third-party APIs into our platform",
+//     deadline: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago (completed)
+//     created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
+//     updatedAt: new Date(),
+//     user_id: "a385a213-c9c0-4679-a28b-d9fb6fe1f353",
+//     status: "Completed",
+//     _count: {
+//       task: 3
+//     }
+//   }
+// ]
+
+export default async function Projects() {
+  const {data: projects, } = await projectServices.findAll();
+  const {data: tasks, } = await taskServices.findAll();
+
+  if(!projects || !tasks){
+    throw 'AAAA'
   }
-]
+  
+  // Count tasks for each project
+  const getTaskCount = (projectId: string) => {
+    return tasks.filter(task => task.project_id === projectId).length;
+  };
 
-export default function Projects() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -53,12 +67,12 @@ export default function Projects() {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {mockProjects.map(project => (
+        {projects.map(project => (
           <div key={project.id} className="bg-gray-800/80 p-6 rounded-lg hover:shadow-lg hover:shadow-green-400/10 border border-gray-700 hover:border-green-400/50 transition-all backdrop-blur-sm">
             <h2 className="text-xl font-semibold text-white">{project.title}</h2>
             <p className="text-gray-300 mt-2 text-sm">{project.description}</p>
             <div className="mt-4 flex justify-between items-center">
-              <span className="text-sm text-gray-400">{project._count.task} tasks</span>
+              <span className="text-sm text-gray-400">{getTaskCount(project.id)} tasks</span>
               <span className={`text-xs px-2 py-1 rounded-full ${
                 project.status === "In Progress" ? "bg-yellow-500/20 text-yellow-300" :
                 project.status === "Planning" ? "bg-blue-500/20 text-blue-300" :
